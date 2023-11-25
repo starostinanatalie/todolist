@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: black;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .title {
+        color: rgb(205, 43, 226);
+        font-family: "Permanent Marker", cursive;
+        font-size: 8vh;
+      }
+      .input__place {
+        background-color: rgb(205, 43, 226);
+        width: 800px;
+        height: 25px;
+      }
+      .input__label {
+        color: rgb(205, 43, 226);
+        font-family: "Caveat", cursive;
+        font-size: 30px;
+      }
+      .button {
+        background-color: rgb(205, 43, 226);
+        width: 150px;
+        height: 40px;
+        border-radius: 5px;
+        font-family: "Caveat", cursive;
+        font-size: 24px;
+      }
+      .task {
+        font-family: "Caveat", cursive;
+        font-size: 30px;
+        color: rgb(205, 43, 226);
+      }
+      .task__finished {
+        font-family: "Caveat", cursive;
+        font-size: 30px;
+        color: rgb(226, 43, 165);
+        text-decoration: line-through;
+      }
+      .title_small {
+        color: rgb(205, 43, 226);
+        font-family: "Caveat", cursive;
+        font-size: 36px;
+        margin-top: 45px;
+        margin-bottom: 15px;
+      }
+      .water__container {
+        width: 90vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 70px;
+      }
+      .water {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-evenly;
+        font-family: "Caveat", cursive;
+        font-size: 36px;
+        color: rgb(205, 43, 226);
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+      .water__glass {
+        color: rgb(226, 43, 165);
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body class="body">
+    <h1 class="title">ToDo List</h1>
+    <h2 class="title_small">Задачи на сегодня</h2>
+    <ul class="list" id="tasklist"></ul>
+    <div class="input">
+      <label class="input__label" for="inp">Еще задача</label>
+      <input type="text" id="inp" class="input__place" />
+      <button type="submit" class="button" onclick="addTask()">Добавить</button>
+    </div>
+    <div class="water__container">
+      <h2 class="title_small">Вода сегодня</h2>
+      <ul class="water">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+      </ul>
+    </div>
+    <script>
+      function drinkWater() {
+        const list = document.querySelector(".water");
+
+        list.addEventListener("click", function (evt) {
+          if (evt.target.tagName === "LI") {
+            evt.target.classList.add("water__glass");
+          }
+        });
+      }
+      function addTask() {
+        let inputTask = document.getElementById("inp");
+        let taskValue = inputTask.value;
+
+        const taskList = document.getElementById("tasklist");
+        let task = document.createElement("li");
+        task.textContent = taskValue;
+        task.classList.add("task");
+        taskList.append(task);
+
+        inputTask.value = "";
+      }
+      function finishedTask() {
+        const list = document.querySelector(".list");
+
+        list.addEventListener("click", function (evt) {
+          if (evt.target.tagName === "LI") {
+            evt.target.classList.remove("task");
+            evt.target.classList.add("task__finished");
+          }
+        });
+      }
+      drinkWater();
+      finishedTask();
+    </script>
+  </body>
+</html>
