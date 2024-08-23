@@ -23,10 +23,29 @@
         align-items: center;
         justify-content: space-between;
       }
+      .top__container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-evenly;
+        color: rgb(205, 43, 226);
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
       .title {
         color: rgb(205, 43, 226);
         font-family: "Permanent Marker", cursive;
-        font-size: 8vh;
+        font-size: 4vh;
+      }
+      .date {
+        color: rgb(205, 43, 226);
+        font-family: "Caveat", cursive;
+        font-size: 3vh;
+      }
+      .taskDone {
+        color: rgb(205, 43, 226);
+        font-family: "Caveat", cursive;
+        font-size: 3vh;
       }
       .input__place {
         background-color: rgb(205, 43, 226);
@@ -38,25 +57,57 @@
         font-family: "Caveat", cursive;
         font-size: 30px;
       }
+      .button__container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-evenly;
+        color: rgb(205, 43, 226);
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
       .button {
         background-color: rgb(205, 43, 226);
-        width: 150px;
+        width: 180px;
         height: 40px;
         border-radius: 5px;
         font-family: "Caveat", cursive;
         font-size: 24px;
       }
+      .taskList {
+        display: flex;
+        flex-direction: row;
+        width: 70vh;
+        justify-content: start;
+        font-family: "Caveat", cursive;
+        font-size: 36px;
+        color: rgb(205, 43, 226);
+        margin-top: 10px;
+        margin-bottom: 8px;
+      }
+
       .task {
+        font-family: "Caveat", cursive;
+        font-size: 36px;
+        color: rgb(205, 43, 226);
+        margin-left: 15px;
+      }
+      .checkbox {
+        margin-left: 30px;
+        margin-right: 30px;
+      }
+      .task__removed {
         font-family: "Caveat", cursive;
         font-size: 30px;
         color: rgb(205, 43, 226);
-      }
-      .task__finished {
-        font-family: "Caveat", cursive;
-        font-size: 30px;
-        color: rgb(226, 43, 165);
         text-decoration: line-through;
       }
+      /* .task__finished {
+        font-family: "Caveat", cursive;
+        font-size: 30px;
+        color: rgb(205, 43, 226);
+        margin-left: 15px;
+      } */
       .title_small {
         color: rgb(205, 43, 226);
         font-family: "Caveat", cursive;
@@ -89,61 +140,210 @@
     </style>
   </head>
   <body class="body">
-    <h1 class="title">ToDo List</h1>
-    <h2 class="title_small">Задачи на сегодня</h2>
-    <ul class="list" id="tasklist"></ul>
+    <div class="top__container">
+      <h2 class="date"></h2>
+      <h1 class="title">ToDo List</h1>
+      <h2 class="taskDone"></h2>
+    </div>
     <div class="input">
       <label class="input__label" for="inp">Еще задача</label>
       <input type="text" id="inp" class="input__place" />
       <button type="submit" class="button" onclick="addTask()">Добавить</button>
     </div>
+    <h2 class="title_small">Задачи на сегодня</h2>
+    <ul class="list" id="tasklist"></ul>
+    <div class="button__container">
+      <button type="submit" class="button" onclick="clearRemoved()">
+        Убрать лишние
+      </button>
+      <button type="submit" class="button" onclick="clearAll()">
+        Очистить список
+      </button>
+    </div>
     <div class="water__container">
       <h2 class="title_small">Вода сегодня</h2>
       <ul class="water">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
-        <li>6</li>
-        <li>7</li>
-        <li>8</li>
+        <li id="w1">1</li>
+        <li id="w2">2</li>
+        <li id="w3">3</li>
+        <li id="w4">4</li>
+        <li id="w5">5</li>
+        <li id="w6">6</li>
+        <li id="w7">7</li>
+        <li id="w8">8</li>
       </ul>
     </div>
     <script>
+      let tasks = [];
+      let finishedTasks = [];
+      numberDoneTasks = 0;
+      const storedTasks = JSON.parse(window.localStorage.getItem("tasks"));
+      const storedDoneTasks = JSON.parse(
+        window.localStorage.getItem("taskDone")
+      );
+      function restoreStorage() {
+        const date = new Date();
+        const currentDate =
+          "" +
+          date.getDate() +
+          "." +
+          date.getMonth() +
+          "." +
+          date.getFullYear();
+        const title = document.querySelector(".date");
+        title.textContent = `${currentDate} `;
+        let storDate = JSON.parse(window.localStorage.getItem("storDate"));
+        if (storedTasks) {
+          if (storedDoneTasks) {
+            for (let doneTask of storedDoneTasks) {
+              tasks = storedTasks;
+              tasks = tasks.filter((task) => task !== doneTask);
+              window.localStorage.setItem("tasks", JSON.stringify(tasks));
+            }
+          } else {
+            tasks = storedTasks;
+          }
+          for (let task of tasks) {
+            drawTask(task);
+          }
+        }
+
+        window.localStorage.removeItem("taskDone");
+        finishedTasks = [];
+
+        if (storDate === currentDate) {
+          const water = Number(
+            JSON.parse(window.localStorage.getItem("water"))
+          );
+          window.localStorage.removeItem("water");
+          for (let i = 0; i < water; i++) {
+            let water_li = document.getElementById(`w${i + 1}`);
+            water_li.classList.add("water__glass");
+            waterCount();
+          }
+          numberDoneTasks = JSON.parse(
+            window.localStorage.getItem("numberDoneTask")
+          );
+          if (!numberDoneTasks) {
+            numberDoneTasks = 0;
+          }
+        } else {
+          window.localStorage.removeItem("numberDoneTask");
+          window.localStorage.setItem("storDate", JSON.stringify(currentDate));
+        }
+        const tasksDone = document.querySelector(".taskDone");
+        tasksDone.textContent = `Уже сделано задач до перезагрузки: ${numberDoneTasks}`;
+      }
+
+      function clearWater() {
+        window.localStorage.setItem("water", JSON.stringify(0));
+      }
+
+      function waterCount() {
+        let waterCounter = JSON.parse(window.localStorage.getItem("water"));
+        if (!waterCounter) {
+          let waterCounter = 0;
+        }
+        waterCounter += 1;
+        window.localStorage.setItem("water", JSON.stringify(waterCounter));
+      }
+
       function drinkWater() {
         const list = document.querySelector(".water");
 
         list.addEventListener("click", function (evt) {
           if (evt.target.tagName === "LI") {
             evt.target.classList.add("water__glass");
+            waterCount();
           }
         });
       }
+
+      function drawTask(taskValue) {
+        const taskList = document.getElementById("tasklist");
+        let task = document.createElement("li");
+        task.innerHTML = `<input type="checkbox" class="checkbox" /><span class="task">${taskValue}</span>`;
+        task.classList.add("taskList");
+        taskList.append(task);
+      }
+
       function addTask() {
         let inputTask = document.getElementById("inp");
         let taskValue = inputTask.value;
 
-        const taskList = document.getElementById("tasklist");
-        let task = document.createElement("li");
-        task.textContent = taskValue;
-        task.classList.add("task");
-        taskList.append(task);
+        tasks.push(taskValue);
+        window.localStorage.setItem("tasks", JSON.stringify(tasks));
+        drawTask(taskValue);
 
         inputTask.value = "";
+        inputTask.focus();
       }
       function finishedTask() {
         const list = document.querySelector(".list");
-
         list.addEventListener("click", function (evt) {
-          if (evt.target.tagName === "LI") {
-            evt.target.classList.remove("task");
-            evt.target.classList.add("task__finished");
+          if (evt.target.tagName === "INPUT") {
+            let thisTask = evt.target.nextSibling.textContent;
+            if (evt.target.checked) {
+              finishedTasks.push(thisTask);
+              numberDoneTasks += 1;
+              window.localStorage.setItem(
+                "numberDoneTask",
+                JSON.stringify(numberDoneTasks)
+              );
+              window.localStorage.setItem(
+                "taskDone",
+                JSON.stringify(finishedTasks)
+              );
+            } else {
+              finishedTasks = finishedTasks.filter((task) => task !== thisTask);
+              numberDoneTasks -= 1;
+              window.localStorage.setItem(
+                "numberDoneTask",
+                JSON.stringify(numberDoneTasks)
+              );
+              window.localStorage.setItem(
+                "taskDone",
+                JSON.stringify(finishedTasks)
+              );
+            }
           }
         });
       }
+      function removeTask() {
+        const list = document.querySelector(".list");
+
+        list.addEventListener("click", function (evt) {
+          if (evt.target.tagName === "SPAN") {
+            evt.target.classList.remove("task");
+            evt.target.classList.add("task__removed");
+            let removingTask = evt.target.textContent;
+            tasks = tasks.filter((task) => task !== removingTask);
+            window.localStorage.setItem("tasks", JSON.stringify(tasks));
+          }
+        });
+      }
+      function clearRemoved() {
+        const removingTasks = document.querySelectorAll(".task__removed");
+        const taskList = document.getElementById("tasklist");
+        for (let task of removingTasks) {
+          let liTask = task.closest("li");
+          liTask.remove();
+        }
+      }
+
+      function clearAll() {
+        const taskList = document.getElementById("tasklist");
+        taskList.remove();
+        for (let i = 0; i <= tasks.length + 1; i++) {
+          tasks.pop();
+        }
+        window.localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+
+      document.addEventListener("DOMContentLoaded", restoreStorage);
       drinkWater();
       finishedTask();
+      removeTask();
     </script>
   </body>
 </html>
