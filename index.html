@@ -28,6 +28,7 @@
         flex-direction: row;
         width: 100%;
         justify-content: space-evenly;
+        align-items: center;
         color: rgb(205, 43, 226);
         margin-top: 15px;
         margin-bottom: 10px;
@@ -35,7 +36,7 @@
       .title {
         color: rgb(205, 43, 226);
         font-family: "Permanent Marker", cursive;
-        font-size: 4vh;
+        font-size: 5vh;
       }
       .date {
         color: rgb(205, 43, 226);
@@ -79,41 +80,50 @@
         flex-direction: row;
         width: 70vh;
         justify-content: start;
+        align-items: center;
         font-family: "Caveat", cursive;
         font-size: 36px;
         color: rgb(205, 43, 226);
         margin-top: 10px;
         margin-bottom: 8px;
       }
-
       .task {
         font-family: "Caveat", cursive;
-        font-size: 36px;
+        font-size: 28px;
         color: rgb(205, 43, 226);
         margin-left: 15px;
       }
       .checkbox {
         margin-left: 30px;
         margin-right: 30px;
+        color: violet;
+        background-color: blueviolet;
+      }
+      .plus {
+        display: none;
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+      .plus-visible {
+        font-family: "Caveat", cursive;
+        font-size: 48px;
+        font-weight: bold;
+        color: rgb(205, 43, 226);
+        margin-left: 15px;
+        margin-right: 15px;
       }
       .task__removed {
         font-family: "Caveat", cursive;
-        font-size: 30px;
+        font-size: 24px;
         color: rgb(205, 43, 226);
         text-decoration: line-through;
       }
-      /* .task__finished {
-        font-family: "Caveat", cursive;
-        font-size: 30px;
-        color: rgb(205, 43, 226);
-        margin-left: 15px;
-      } */
       .title_small {
         color: rgb(205, 43, 226);
         font-family: "Caveat", cursive;
         font-size: 36px;
-        margin-top: 45px;
-        margin-bottom: 15px;
+        margin-top: 15px;
+        margin-bottom: 10px;
       }
       .water__container {
         width: 90vw;
@@ -145,19 +155,14 @@
       <h1 class="title">ToDo List</h1>
       <h2 class="taskDone"></h2>
     </div>
+    <h2 class="title_small">Задачи на сегодня</h2>
+    <ul class="list" id="tasklist"></ul>
     <div class="input">
       <label class="input__label" for="inp">Еще задача</label>
       <input type="text" id="inp" class="input__place" />
       <button type="submit" class="button" onclick="addTask()">Добавить</button>
-    </div>
-    <h2 class="title_small">Задачи на сегодня</h2>
-    <ul class="list" id="tasklist"></ul>
-    <div class="button__container">
       <button type="submit" class="button" onclick="clearRemoved()">
         Убрать лишние
-      </button>
-      <button type="submit" class="button" onclick="clearAll()">
-        Очистить список
       </button>
     </div>
     <div class="water__container">
@@ -177,22 +182,45 @@
       let tasks = [];
       let finishedTasks = [];
       numberDoneTasks = 0;
-      const storedTasks = JSON.parse(window.localStorage.getItem("tasks"));
-      const storedDoneTasks = JSON.parse(
-        window.localStorage.getItem("taskDone")
-      );
-      function restoreStorage() {
+      const tasksDone = document.querySelector(".taskDone");
+
+      function getDate() {
         const date = new Date();
+        let month = date.getMonth() + 1;
+        if (month < 10) {
+          month = "0" + month;
+        }
         const currentDate =
-          "" +
-          date.getDate() +
-          "." +
-          date.getMonth() +
-          "." +
-          date.getFullYear();
-        const title = document.querySelector(".date");
-        title.textContent = `${currentDate} `;
-        let storDate = JSON.parse(window.localStorage.getItem("storDate"));
+          "" + date.getDate() + "." + month + "." + date.getFullYear();
+        return currentDate;
+      }
+
+      function drawDoneTasks(numberDoneTasks) {
+        const titleTasksDone = document.querySelector(".taskDone");
+        tasksDone.textContent = `Сегодня сделано задач: ${numberDoneTasks}`;
+      }
+
+      function drawDate(currentDate) {
+        const titleDate = document.querySelector(".date");
+        titleDate.textContent = `${currentDate} `;
+      }
+
+      function restoreWater(storDate, currentDate) {
+        if (storDate === currentDate) {
+          const water = Number(
+            JSON.parse(window.localStorage.getItem("water"))
+          );
+          for (let i = 0; i < water; i++) {
+            let water_li = document.getElementById(`w${i + 1}`);
+            water_li.classList.add("water__glass");
+            waterCount();
+          }
+        } else {
+          window.localStorage.removeItem("water");
+        }
+      }
+
+      function restoreTasks(storedTasks, storedDoneTasks) {
         if (storedTasks) {
           if (storedDoneTasks) {
             for (let doneTask of storedDoneTasks) {
@@ -207,36 +235,31 @@
             drawTask(task);
           }
         }
-
-        window.localStorage.removeItem("taskDone");
-        finishedTasks = [];
-
-        if (storDate === currentDate) {
-          const water = Number(
-            JSON.parse(window.localStorage.getItem("water"))
-          );
-          window.localStorage.removeItem("water");
-          for (let i = 0; i < water; i++) {
-            let water_li = document.getElementById(`w${i + 1}`);
-            water_li.classList.add("water__glass");
-            waterCount();
-          }
-          numberDoneTasks = JSON.parse(
-            window.localStorage.getItem("numberDoneTask")
-          );
-          if (!numberDoneTasks) {
-            numberDoneTasks = 0;
-          }
-        } else {
-          window.localStorage.removeItem("numberDoneTask");
-          window.localStorage.setItem("storDate", JSON.stringify(currentDate));
-        }
-        const tasksDone = document.querySelector(".taskDone");
-        tasksDone.textContent = `Уже сделано задач до перезагрузки: ${numberDoneTasks}`;
       }
 
-      function clearWater() {
-        window.localStorage.setItem("water", JSON.stringify(0));
+      function restoreStorage() {
+        let currentDate = getDate();
+        let storDate = JSON.parse(window.localStorage.getItem("storDate"));
+        numberDoneTasks = JSON.parse(
+          window.localStorage.getItem("numberDoneTask")
+        );
+        const storedTasks = JSON.parse(window.localStorage.getItem("tasks"));
+        const storedDoneTasks = JSON.parse(
+          window.localStorage.getItem("taskDone")
+        );
+        drawDate(currentDate);
+        drawDoneTasks(numberDoneTasks);
+        restoreWater(storDate, currentDate);
+        restoreTasks(storedTasks, storedDoneTasks);
+        window.localStorage.removeItem("taskDone");
+        finishedTasks = [];
+        if (storDate !== currentDate) {
+          window.localStorage.removeItem("numberDoneTask");
+        }
+        if (!numberDoneTasks) {
+          numberDoneTasks = 0;
+        }
+        window.localStorage.setItem("storDate", JSON.stringify(currentDate));
       }
 
       function waterCount() {
@@ -262,7 +285,7 @@
       function drawTask(taskValue) {
         const taskList = document.getElementById("tasklist");
         let task = document.createElement("li");
-        task.innerHTML = `<input type="checkbox" class="checkbox" /><span class="task">${taskValue}</span>`;
+        task.innerHTML = `<span class="plus">+</span><input type="checkbox" class="checkbox" /><span class="task">${taskValue}</span>`;
         task.classList.add("taskList");
         taskList.append(task);
       }
@@ -278,11 +301,13 @@
         inputTask.value = "";
         inputTask.focus();
       }
+
       function finishedTask() {
         const list = document.querySelector(".list");
         list.addEventListener("click", function (evt) {
           if (evt.target.tagName === "INPUT") {
             let thisTask = evt.target.nextSibling.textContent;
+            let plus = evt.target.previousSibling;
             if (evt.target.checked) {
               finishedTasks.push(thisTask);
               numberDoneTasks += 1;
@@ -294,6 +319,9 @@
                 "taskDone",
                 JSON.stringify(finishedTasks)
               );
+              plus.classList.remove("plus");
+              plus.classList.add("plus-visible");
+              drawDoneTasks(numberDoneTasks);
             } else {
               finishedTasks = finishedTasks.filter((task) => task !== thisTask);
               numberDoneTasks -= 1;
@@ -305,10 +333,14 @@
                 "taskDone",
                 JSON.stringify(finishedTasks)
               );
+              plus.classList.remove("plus-visible");
+              plus.classList.add("plus");
+              drawDoneTasks(numberDoneTasks);
             }
           }
         });
       }
+
       function removeTask() {
         const list = document.querySelector(".list");
 
@@ -322,6 +354,7 @@
           }
         });
       }
+
       function clearRemoved() {
         const removingTasks = document.querySelectorAll(".task__removed");
         const taskList = document.getElementById("tasklist");
@@ -329,15 +362,6 @@
           let liTask = task.closest("li");
           liTask.remove();
         }
-      }
-
-      function clearAll() {
-        const taskList = document.getElementById("tasklist");
-        taskList.remove();
-        for (let i = 0; i <= tasks.length + 1; i++) {
-          tasks.pop();
-        }
-        window.localStorage.setItem("tasks", JSON.stringify(tasks));
       }
 
       document.addEventListener("DOMContentLoaded", restoreStorage);
