@@ -243,6 +243,9 @@
         numberDoneTasks = JSON.parse(
           window.localStorage.getItem("numberDoneTask")
         );
+        if (!numberDoneTasks) {
+          numberDoneTasks = 0;
+        }
         const storedTasks = JSON.parse(window.localStorage.getItem("tasks"));
         const storedDoneTasks = JSON.parse(
           window.localStorage.getItem("taskDone")
@@ -256,9 +259,7 @@
         if (storDate !== currentDate) {
           window.localStorage.removeItem("numberDoneTask");
         }
-        if (!numberDoneTasks) {
-          numberDoneTasks = 0;
-        }
+
         window.localStorage.setItem("storDate", JSON.stringify(currentDate));
       }
 
