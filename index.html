@@ -222,14 +222,12 @@
 
       function restoreTasks(storedTasks, storedDoneTasks) {
         if (storedTasks) {
+          tasks = storedTasks;
           if (storedDoneTasks) {
             for (let doneTask of storedDoneTasks) {
-              tasks = storedTasks;
               tasks = tasks.filter((task) => task !== doneTask);
               window.localStorage.setItem("tasks", JSON.stringify(tasks));
             }
-          } else {
-            tasks = storedTasks;
           }
           for (let task of tasks) {
             drawTask(task);
@@ -243,6 +241,9 @@
         numberDoneTasks = JSON.parse(
           window.localStorage.getItem("numberDoneTask")
         );
+        if (storDate !== currentDate) {
+          window.localStorage.removeItem("numberDoneTask");
+        }
         if (!numberDoneTasks) {
           numberDoneTasks = 0;
         }
@@ -256,10 +257,6 @@
         restoreTasks(storedTasks, storedDoneTasks);
         window.localStorage.removeItem("taskDone");
         finishedTasks = [];
-        if (storDate !== currentDate) {
-          window.localStorage.removeItem("numberDoneTask");
-        }
-
         window.localStorage.setItem("storDate", JSON.stringify(currentDate));
       }
 
