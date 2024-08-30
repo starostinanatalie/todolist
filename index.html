@@ -106,7 +106,7 @@
       }
       .plus-visible {
         font-family: "Caveat", cursive;
-        font-size: 40px;
+        font-size: 32px;
         font-weight: bold;
         color: rgb(205, 43, 226);
         margin-left: 15px;
@@ -238,12 +238,12 @@
       function restoreStorage() {
         let currentDate = getDate();
         let storDate = JSON.parse(window.localStorage.getItem("storDate"));
+        if (storDate != currentDate) {
+          window.localStorage.removeItem("numberDoneTask");
+        }
         numberDoneTasks = JSON.parse(
           window.localStorage.getItem("numberDoneTask")
         );
-        if (storDate !== currentDate) {
-          window.localStorage.removeItem("numberDoneTask");
-        }
         if (!numberDoneTasks) {
           numberDoneTasks = 0;
         }
