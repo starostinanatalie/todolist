@@ -186,12 +186,16 @@
 
       function getDate() {
         const date = new Date();
+        let dateNumber = date.getDate();
+        if (dateNumber < 10) {
+          dateNumber = "0" + dateNumber;
+        }
         let month = date.getMonth() + 1;
         if (month < 10) {
           month = "0" + month;
         }
         const currentDate =
-          "" + date.getDate() + "." + month + "." + date.getFullYear();
+          "" + dateNumber + "." + month + "." + date.getFullYear();
         return currentDate;
       }
 
