@@ -181,7 +181,7 @@
     <script>
       let tasks = [];
       let finishedTasks = [];
-      numberDoneTasks = 0;
+      let numberDoneTasks = 0;
       const tasksDone = document.querySelector(".taskDone");
 
       function getDate() {
@@ -200,7 +200,6 @@
       }
 
       function drawDoneTasks(numberDoneTasks) {
-        const titleTasksDone = document.querySelector(".taskDone");
         tasksDone.textContent = `Сегодня сделано задач: ${numberDoneTasks}`;
       }
 
@@ -267,7 +266,7 @@
       function waterCount() {
         let waterCounter = JSON.parse(window.localStorage.getItem("water"));
         if (!waterCounter) {
-          let waterCounter = 0;
+          waterCounter = 0;
         }
         waterCounter += 1;
         window.localStorage.setItem("water", JSON.stringify(waterCounter));
